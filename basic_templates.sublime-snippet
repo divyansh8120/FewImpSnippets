@@ -1,0 +1,185 @@
+<snippet>
+	<content><![CDATA[
+#include <bits/stdc++.h>
+using namespace std;
+
+template <typename A, typename B> string to_string(pair<A, B> p);
+string to_string(const char& ch) { return "'" + string(1, ch) + "'"; }
+string to_string(const string& s) { return '"' + s + '"'; }
+string to_string(const char* s) { return to_string((string) s); }
+string to_string(bool b) { return (b ? "true" : "false"); }
+string to_string(vector<bool> v) {
+	bool first = true; string res = "{";
+	for (int i = 0; i < static_cast<int>(v.size()); i++) {
+		if (!first) { res += ", "; }
+		first = false; res += to_string(v[i]);
+	}
+	res += "}"; return res;
+}
+template <typename A> string to_string(A v) {
+	bool first = true; string res = "{";
+	for (const auto &x : v) {
+		if (!first) { res += ", "; }
+		first = false; res += to_string(x);
+	}
+	res += "}"; return res;
+}
+template <typename A, typename B> string to_string(pair<A, B> p) {
+	return "(" + to_string(p.first) + ", " + to_string(p.second) + ")";
+}
+template <typename A> string to_string(vector<vector<A>> v) {
+	string res = "{\n";
+	for (const auto &x : v) {
+		res += to_string(x) + '\n';
+	}
+	res += "}"; return res;
+}
+#define output cout
+void debug_out() { output << endl; }
+template <typename Head, typename... Tail>
+void debug_out(Head H, Tail... T) {
+	output << " " << to_string(H);
+	debug_out(T...);
+}
+#ifndef ONLINE_JUDGE
+#define dbg(...) output << "[" << #__VA_ARGS__ << "] :", debug_out(__VA_ARGS__)
+#else
+#define dbg(...) 42
+#endif
+
+#define ll int64_t 
+#define ull uint64_t
+#define lld long double
+#define pb push_back
+#define eb emplace_back
+#define ff first
+#define ss second
+#define vt vector
+#define vll vt<ll>
+#define pll pair<ll, ll>
+#define vpll vt<pll>
+#define vvll vt<vll>
+#define all(v) v.begin(),v.end()
+#define rall(v) v.rbegin(), v.rend()
+#define FOR(i,n) for(ll i=0;i<n;i++)
+template <typename T> using vv = vector<vector<T>>;
+template <typename T> using mxpq = priority_queue<T>;
+template <typename T> using mnpq = priority_queue<T, vt<T>, greater<T>>;
+#define fps(x,y) fixed << setprecision(y) << x
+#define mmss(xa,v) memset(xa,v,sizeof(xa)) // use only if v = -1 or 0, else use fill
+
+// Overriding Input operator
+template <class A, size_t S> istream& operator>>(istream& in, array<A, S>& a)
+{ for (A& x : a) in >> x; return in; }
+template <typename T> istream& operator>>(istream& in, vt<T>& a)
+{ for (T& x : a) in >> x; return in; }
+
+// Overriding Output operator
+template <class A, size_t S> ostream& operator<<(ostream& out, array<A, S>& a)
+{bool f = false; for (A& x : a) { if (f) out << " "; out << x; f = true; } return out;}
+template <typename T> ostream& operator<<(ostream& out, vt<T>& a)
+{bool f = false; for (T& x : a) {if (f) out << " "; out << x; f = true; } return out;}
+
+// amax and amin functions
+template <typename T, typename T1, typename... Tail> T amin(T& a, T1 b, Tail... c)
+{ if (b < a) a = b; if constexpr (sizeof...(c) != 0) { amin(a, c...); } return a; }
+template <typename T, typename T1, typename... Tail> T amax(T& a, T1 b, Tail... c)
+{ if (b > a) a = b; if constexpr (sizeof...(c) != 0) { amax(a, c...); } return a; }
+
+const int64_t mod = 1e9 + 7;
+ll power(ll x, ll y, int64_t M = mod) {
+	ll v = 1;
+	if (M > ll(0)) {x = x % M; while (y > 0) {if (y & 1)v = (v * x) % M; y = y >> 1; x = (x * x) % M;} return v;}
+	else {while (y > 0) {if (y & 1)v = v * x; y = y >> 1; x = x * x;} return v;}
+}
+int largest_bit(long long x) { // based on 0-indexing
+	return x == 0 ? -1 : 63 - __builtin_clzll(x);
+}
+
+const lld PI = acos(-1);
+const ll INF = 0x3f3f3f3f3f3f3f3fll;
+const ll maxN = 2e5 + 5;
+
+void preSolve(int& testcases) {
+   	// cin >> testcases;
+}
+
+void solve() {
+}
+
+signed main()
+{
+#ifdef LOCAL
+   	freopen("in.txt", "r", stdin);
+   	freopen("out.txt", "w", stdout);
+#endif
+	ios_base::sync_with_stdio(false);cin.tie(NULL);
+	int testcases = 1;
+	preSolve(testcases);
+	for (int caseno = 1; caseno <= testcases; ++caseno) {
+		// cout << "Case #" << caseno << ": ";
+		solve();
+		cout << '\n'; // endl for an interactive problem
+	}
+	return 0;
+}
+
+/*
+On getting WA:
+1. Check if implementation is correct and NOTHING overflows.
+2. Start thinking about counter cases for your logic as well as implementation.
+3. Try removing redundancy (any additon you might have done for ease of 
+   implementation or thought process) and putting asserts.
+4. Make a generator, an unoptimized but correct soln and run it against wrong soln.
+5. When there a few values and we have to perform certain operations (mostly in game theory),
+   start looking for patters for the answer
+
+
+Things you may rarely use:
+
+In C++, comparator should return false if its arguments are equal.
+#define _GLIBCXX_DEBUG // Use at the top of code
+cerr << "[Execution : " << (1.0 * clock()) / CLOCKS_PER_SEC << "s]\n";
+// up, right, down, left
+int dx[4] = { -1, 0, 1, 0}, dy[4] = {0, 1, 0, -1};
+// Eight Directions
+int dx[] = {+1,-1,+0,+0,-1,-1,+1,+1}, dy[] = {+0,+0,+1,-1,+1,-1,-1,+1};
+// Knight moves
+int dx[]= {-2,-2,-1,1,-1,1,2,2}, dy[]= {1,-1,-2,-2,2,2,-1,1}; 
+For taking a complete line as input: string s; while(s == "") getline(cin, s);
+For calculating inverse modulo, raise to the power mod-2.
+For (a^b)%mod, where b is large, replace b by b%(mod-1).
+x | (x + 1) sets lowest unset bit of x
+x & (x - 1) unsets lowest set bit of x
+x - 1 unsets the lowest set bit and sets all bits on it's right
+x & (x-1) gives the lowest set bit
+arr.erase(unique(all(arr)), arr.end()); // erase duplicates
+#define merg(a,b,c) set_union(a.begin(),a.end(),b.begin(),b.end(),inserter(c,c.begin()))
+https://www.techiedelight.com/merge-two-sets-set_union-merge-cpp/
+In geometry, use atan2 if any tan functions occur in the solution
+
+#pragma GCC optimize "trapv" // catches integer overflows
+#pragma GCC optimize ("O3")
+#pragma GCC target ("sse4")
+#pragma GCC optimize("Ofast")
+#pragma GCC optimize("Ofast,unroll-loops")
+#pragma GCC target("avx,avx2,fma")
+
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+template <typename T> using oset = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statistics_node_update>;
+functions: set.insert(val), *(set.find_by_order(order-1)), set.order_of_key(val)
+less_equal for multiset
+
+#include <ext/pb_ds/priority_queue.hpp>
+template<typename T> using pbds_pq = __gnu_pbds::priority_queue<T>;
+template<typename T> using pbds_min_pq = __gnu_pbds::priority_queue<T, greater<T>>;
+*/
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>boilerplate</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.cpp, source.c++, source.c</scope>
+</snippet>

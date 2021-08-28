@@ -1,0 +1,74 @@
+<snippet>
+	<content><![CDATA[
+
+/*
+https://codeforces.com/blog/entry/55822
+https://discuss.codechef.com/t/kgcd-editorial/80754
+
+precalculate spf sieve
+
+'ar' contains the elements
+'spf' is the smallest prime factor sieve
+we are using PIE here to count the number of non coprime pairs
+the number of coprime pair = total pairs - non coprime pairs
+
+myhash will be used for hashing the elements so maxi = max(ar[i])
+myhash[i] will store the number of elements divisible by i in previous
+part of the array
+
+div_cnt will store the number of elements which are be divisible
+by any of the prime divisors of a[i]
+basically it will store the count of numbers in the previous part of the array
+such that their gcd with a[i] != 1
+
+the operation including bits is the inclusion exclusion principle
+consider the problem, count the numbers in range 1 to 100 which are divisible
+by 2,3 or 5.
+ans = (50 + 33 + 20) - (16 + 10 + 6) - (3)
+We have done this:
+(cnt of numbers divisible by 2 , 3 , 5) - (cnt of numbers divisible by 2*3 , 2*5 , 3*5)
++ (cnt of numbers divisible by 2*3*5)
+
+Try this problem:
+https://www.codechef.com/problems/KGCD
+(Hint: if div_cnt < i, then there is atleast 1 element in the
+previous part of the array which will be coprime with a[i])
+*/
+
+ll coprime_pair(vt<int>& ar) {
+	ll cpr = 0;
+	ll maxi = 1e6;
+	vt<ll> myhash(maxi + 1, 0);
+	for (ll i = 0; i < (ll)ar.size(); i++) {
+		ll x = ar[i];
+		vector <ll> primes;
+		// we need only prime divisors, not their multiplicity
+		while (x > 1) {
+			ll pr = spf[x];
+			primes.push_back(pr);
+			while (x % pr == 0)
+				x /= pr;
+		}
+		ll sz = primes.size();
+		ll div_cnt = 0;
+		for (ll mask = 1; mask < (1 << sz); mask++) {
+			ll divisor = 1;
+			for (ll l = 0; l < sz; l++) {
+				if (mask >> l & 1)
+					divisor *= primes[l];
+			}
+			ll bits = __builtin_popcount(mask);
+			div_cnt += (bits & 1 ? myhash[divisor] : -myhash[divisor]);
+			myhash[divisor]++;
+		}
+		cpr += (i - div_cnt);
+	}
+	return cpr;
+}
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>coprimepair_fnc</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.cpp, source.c++, source.c</scope>
+</snippet>

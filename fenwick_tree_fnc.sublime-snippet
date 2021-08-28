@@ -1,0 +1,190 @@
+<snippet>
+	<content><![CDATA[
+
+/*
+https://codeforces.com/contest/1354/submission/80534100
+
+Basic
+https://www.hackerearth.com/practice/notes/binary-indexed-tree-or-fenwick-tree/
+https://cp-algorithms.com/data_structures/fenwick.html
+https://www.topcoder.com/community/competitive-programming/tutorials/binary-indexed-trees/
+
+Binary Lifting on Fenwick Tree
+https://codeforces.com/blog/entry/61364
+https://www.youtube.com/watch?v=nuUspQ7ORXE&t=215s
+Try this problem: https://codeforces.com/contest/1354/problem/D
+*/
+
+template <typename T = int64_t>
+class fenwick {
+public:
+	int n;
+	vector<T> fetree;
+
+	fenwick(int _n) {
+		n = _n;
+		fetree = vector<T> (n + 1, 0);
+	}
+
+	// O(n) initialization of the Fenwick tree.
+	template <typename T_array>
+	void build(const T_array & initial) {
+		assert(int(initial.size()) == n);
+
+		for (int i = 1; i <= n; i++) {
+			fetree[i] = initial[i - 1];
+
+			for (int k = (i & -i) >> 1; k > 0; k >>= 1)
+				fetree[i] += fetree[i - k];
+		}
+	}
+
+	// l, r, idx are 0-indexing
+	// idx is in [0, n)
+	void update(int idx, T change) {
+		// change = original - new
+		++idx;
+		// as bit is 1-indexing based and idx is 0-indexing
+		while (idx <= n) {
+			fetree[idx] += change;
+			idx += (idx & (-idx));
+			// -idx is 2's comlpement
+			// idx & -idx gives the last bit set in a number
+		}
+	}
+	// every index i in the fetree[] array stores the cumulative sum
+	// from the index i to i - (1 << r) + 1 (both inclusive), where
+	// r represents the last set bit in the index i
+
+	// idx is in [0, n)
+	// returns the sum of the range [0, idx]
+	T query(int idx) const {
+		++idx;
+		// as bit is -indexing based and idx is 0-indexing
+		T s = 0;
+		while (idx > 0) {
+			s += fetree[idx];
+			idx -= (idx & (-idx));
+		}
+		return s;
+	}
+
+	// l and r are both in [0, n)
+	// returns the sum in the range [l, r]
+	T querylr(int l, int r) const {
+		return query(r) - query(l - 1);
+	}
+
+	// l and r are both in [0, n)
+	// add change in entire [l, r]
+	void updatelr(int l, int r, T change) {
+		update(l, change);
+		update(r + 1, -change);
+	}
+
+	// Returns the element at index a in O(1) amortized across
+	// every index. Equivalent to query(a, a + 1).
+	T get(int i) const {
+		assert(0 <= i && i < n);
+		int above = i + 1;
+		T sum = fetree[above];
+		above -= above & -above;
+
+		while (i != above) {
+			sum -= fetree[i];
+			i -= i & -i;
+		}
+
+		return sum;
+	}
+
+	static int highest_bit(int x) {
+		return x == 0 ? -1 : 31 - __builtin_clz(x);
+	}
+
+	// Returns the largest p in `[0, n]` such that `query(p) <= sum`. Returns -1 if no such p exists (`sum < 0`).
+	// Can be used as an ordered set/multiset on indices in `[0, n)` by using the tree as a 0/1 or frequency array:
+	// `set(index, 1)` is equivalent to insert(index). `update(index, +1)` is equivalent to multiset.insert(index).
+	// `set(index, 0)` or `update(index, -1)` are equivalent to erase(index).
+	// `get(index)` provides whether index is present or not, or the count of index (if multiset).
+	// `query(index)` provides the count of elements < index.
+	// `find_last_prefix(k)` finds the k-th smallest element (0-indexed). Returns `n` for `sum >= set.size()`.
+	int find_last_prefix(T sum) const {
+		if (sum < 0)
+			return -1;
+
+		int prefix = 0;
+
+		for (int k = highest_bit(n); k >= 0; k--) {
+			if (prefix + (1 << k) <= n && fetree[prefix + (1 << k)] <= sum) {
+				prefix += 1 << k;
+				sum -= fetree[prefix];
+			}
+		}
+		return prefix;
+
+		// for (int k = highest_bit(n); k >= 0; k--) {
+		// 	if (prefix + (1 << k) <= n && fetree[prefix + (1 << k)] < sum) {
+		// 		prefix += 1 << k;
+		// 		sum -= fetree[prefix];
+		// 	}
+		// }
+		// return prefix + 1;
+		// +1 because 'prefix' will have position of largest value less than 'val'
+	}
+};
+
+/*
+int bit[maxN];
+
+// l, r, idx are 0-indexing
+
+void upd(int idx, int val) {
+	// val = original - new
+	++idx; // as bit is -indexing based and idx is 0-indexing
+	while (idx <= n) {
+		bit[idx] += val;
+		idx += (idx & (-idx));
+	}
+}
+
+ll sum(int idx) {
+	++idx; // as bit is -indexing based and idx is 0-indexing
+	ll s = 0;
+	while (idx > 0) {
+		s += bit[idx];
+		idx -= (idx & (-idx));
+	}
+	return s;
+}
+
+ll sumlr(int l, int r) {
+	return sum(r + 1) - sum(l);
+}
+
+void updlr(int l, int r, ll val) {
+	upd(l + 1, val); upd(r + 2, -val);
+}
+
+int bit_search(int val) {
+	int curr = 0, ans = 0, prevsum = 0;
+	int logn = log2(n);
+	for (int i = logn; i >= 0; --i) {
+		if ((curr + (1 << i)) <= n && bit[curr + (1 << i)] + prevsum < val) {
+			ans = curr + (1 << i);
+			curr = ans;
+			prevsum += bit[curr];
+		}
+	}
+	return 1 + ans; // +1 because 'ans' will have position of largest value less than 'val'
+}
+// here's an example {2, 4}
+// bit_search([0, 1 ,2]) = 1, bit_search([3, .. , 6]) = 2, bit_search([7, ..]) = 3
+*/
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>fenwick_tree_fnc</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.cpp, source.c++, source.c</scope>
+</snippet>

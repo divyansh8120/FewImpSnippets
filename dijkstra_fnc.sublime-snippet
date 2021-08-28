@@ -1,0 +1,43 @@
+<snippet>
+	<content><![CDATA[
+
+/*
+Dijkstra to calculate single source shortest path
+Time Complexity: O(V + E*log V)
+
+Make sure to choose correct value of infinity
+*/
+
+vt<ll> dist(n, 1e9);
+vt<ll> processed(n, 0);
+mnpq<pll> pq;
+pq.insert({0, 0}); // {weight or dist, starting node}
+dist[0] = 0; // dist of starting node to itself is 0
+while (!pq.empty()) {
+	ll a = pq.top().ss; pq.pop();
+	if (processed[a]) continue;
+	processed[a] = 1;
+	for (auto& u : g[a]) {
+		ll b = u.ff, w = u.ss;
+		if (dist[a] + w < dist[b]) {
+			dist[b] = dist[a] + w;
+			pq.push({dist[b], b});
+		}
+	}
+}
+
+/*
+Key property for the fact that Dijkstra works on graphs with nonnegative weights 
+is that if you append an edge to some path then this longer path will not have 
+smaller weight. This property is true both for weight of a path defined as a sum 
+of edges (when edges are nonnegative) and defined as a heaviest edge on it 
+(when edges are arbitrary reals).
+https://codeforces.com/blog/entry/88525
+*/
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>dijkstra_fnc</tabTrigger> 
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.cpp, source.c++, source.c</scope>
+</snippet>

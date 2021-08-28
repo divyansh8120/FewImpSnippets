@@ -1,0 +1,32 @@
+<snippet>
+	<content><![CDATA[
+vvll matmul(vvll& mat1, vvll& mat2) {
+	// tmp = mat 1 * mat 2
+	int n1 = mat1.size(), m1 = mat1[0].size();
+	int n2 = mat2.size(), m2 = mat2[0].size();
+	assert(m1 == n2);
+	vvll tmp(n1, vll(m2, 0));
+	for (int i = 0; i < n1; i++) {
+		for (int j = 0; j < m2; j++) {
+			for (int k = 0; k < n2; k++) {
+				if(mat1[i][k] >= mod) mat1[i][k] -= mod;
+				if(mat2[k][j] >= mod) mat2[k][j] -= mod;
+				tmp[i][j] += (mat1[i][k] * mat2[k][j]) % mod;
+				if(tmp[i][j] >= mod) tmp[i][j] -= mod;
+			}
+		}
+	}
+	return tmp;
+	// for (int i = 0; i < n1; i++) {
+	// 	for (int j = 0; j < m2; j++) {
+	// 		mat1[i][j] = tmp[i][j];
+	// 	}
+	// }
+}
+// If getting TLE, use global 2D arrays and specific functions
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>matrix_mul_fnc</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.cpp, source.c++, source.c</scope>
+</snippet>

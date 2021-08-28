@@ -1,0 +1,54 @@
+<snippet>
+	<content><![CDATA[
+
+/*
+Sparse table calculates range queries in O(1) for idempotent functions
+i.e., A operation A = A. Operation = min, max, and, or
+
+In this sparse table we are keeping the indices of elements 
+rather than the elements themselves
+*/
+
+/*
+int n;
+vector<int> a(maxN);
+vector<vector<int>> st(maxN, vt<int>(22, 0)); // sparse table
+int lim;
+
+int fnc(int i, int j) {
+  // Note: if a[i] == a[j], then it will return j
+  return a[i] < a[j] ? i : j; // for min sparse table
+  // return a[i] > a[j] ? i : j; // for max sparse table
+}
+
+void buildst() {
+  for (int i = 0; i < n; ++i) {
+    st[i][0] = i;
+  }
+  for (int j = 1; j < lim; ++j) {
+    for (int i = 0; i + (1 << j) < n; ++i) {
+      st[i][j] = fnc(st[i][j - 1], st[i + (1 << (j - 1))][j - 1]);
+    }
+  }
+}
+
+// return index of the value req
+int queryst_index(int i, int j) {
+  if (i == j) return i;
+  int level = log2(j - i);
+  return fnc(st[i][level], st[j - (1 << level)][level]);
+}
+
+int queryst_val(int i, int j) {
+  int idx = queryst_index(i, j);
+  return a[idx];
+}
+
+*/	
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>sparse_table_fnc</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.cpp, source.c++, source.c</scope>
+</snippet>

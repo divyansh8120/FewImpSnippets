@@ -1,0 +1,76 @@
+<snippet>
+	<content><![CDATA[
+
+
+class dsu {
+// Basic Code of DSU consisting of path 
+// compression + small to large mergings
+public:
+	int n, component;
+	vector<int> par, rank_dsu;
+	dsu(int _n) {
+		n = component = _n;
+		par = vector<int> (n + 1);
+		rank_dsu = vector<int> (n + 1);
+	}
+	void initdsu() {
+		component = n;
+		for (int i = 0; i <= n; ++i) {
+			par[i] = -1;
+			rank_dsu[i] = 1;
+		}
+	}
+	int fin(int a) {
+		if (par[a] < 0) return a;
+		return par[a] = fin(par[a]);
+	}
+	void mrg(int a, int b) {
+		a = fin(a);
+		b = fin(b);
+		if (a == b) return;
+		component--;
+		if (rank_dsu[a] > rank_dsu[b]) {
+			rank_dsu[a] += rank_dsu[b];
+			par[b] = a;
+		}
+		else {
+			rank_dsu[b] += rank_dsu[a];
+			par[a] = b;
+		}
+	}
+};
+
+/*
+ll par[maxN], rank_dsu[maxN];
+ll fin(ll a) {
+	// recursive find function consisting of path compression
+	if (par[a] < 0) return a;
+	return par[a] = fin(par[a]);
+}
+void mrg(ll a, ll b) {
+	a = fin(a);
+	b = fin(b);
+	if (a == b) return;
+	if (rank_dsu[a] > rank_dsu[b]) {
+		rank_dsu[a] += rank_dsu[b];
+		par[b] = a;
+	}
+	else {
+		rank_dsu[b] += rank_dsu[a];
+		par[a] = b;
+	}
+}
+void initdsu(ll n = maxN) {
+	for (int i = 1; i <= n; ++i) {
+		par[i] = -1;
+		rank_dsu[i] = 1;
+	}
+}
+*/
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>dsu_fnc</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.cpp, source.c++, source.c</scope>
+</snippet>

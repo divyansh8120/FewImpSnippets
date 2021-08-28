@@ -1,0 +1,50 @@
+<snippet>
+	<content><![CDATA[
+
+/*
+A good problem on LIS and also finding the LIS
+https://www.codechef.com/problems/BEAUTPAR
+Soln:
+https://www.codechef.com/viewsolution/41386016
+https://www.codechef.com/viewsolution/40886718
+Resource:
+https://www.geeksforgeeks.org/construction-of-longest-monotonically-increasing-subsequence-n-log-n/
+https://youtu.be/S9oUiVYEq7E
+
+vector<int> lis;
+vector<int> par(n + 1, -1); // par[i] be the predecessor of element
+// with index i in the LIS ending at element with index i.
+vector<int> pos(n + 1, -1); // pos[i + 1] stores the index of element
+// which is in the lis at ith position currently
+lis.push_back(a[0]); // ease of implementation
+int len = 1;
+pos[1] = 0;
+for (int i = 1; i < n; i++) {
+    // lower bound - when elements have to be strictly increasing
+    // upper bound - when elements have to be non-decreasing
+    auto it = lower_bound(lis.begin(), lis.end(), a[i]);
+    int idx = (it - lis.begin()) + 1; // length not index
+    if (it == lis.end()) {
+        lis.push_back(a[i]);
+        len++;
+        par[i] = pos[len - 1];
+        pos[len] = i;
+    }
+    else {
+        *it = a[i];
+        par[i] = pos[idx - 1];
+        pos[idx] = i;
+    }
+}
+// for (int i = pos[len]; i >= 0; i = par[i]) {
+//     cout << a[i] << ' ';
+// } 
+// cout << '\n';
+*/
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>lis_dp_fnc</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.cpp, source.c++, source.c</scope>
+</snippet>

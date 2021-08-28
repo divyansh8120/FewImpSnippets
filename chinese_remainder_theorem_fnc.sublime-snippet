@@ -1,0 +1,94 @@
+<snippet>
+	<content><![CDATA[
+
+/*
+https://github.com/atcoder/ac-library/blob/master/atcoder/math.hpp
+https://forthright48.com/chinese-remainder-theorem-part-1-coprime-moduli/
+https://forthright48.com/chinese-remainder-theorem-part-2-non-coprime-moduli/
+
+While declaring CRT, vector of primes must be passed to the constructor
+Call get function with vector of remainders to get back the number
+
+Sample Problem:
+https://atcoder.jp/contests/abc193/tasks/abc193_e
+https://atcoder.jp/contests/abc193/submissions/24182996
+
+Notes:
+Within the lcm of all the moduli (which are coprime so it will be product of all the moduli),
+there will exist only one such numbers which will satisfy all the conditions
+*/
+
+class CRT {
+public:
+    int64_t n;
+    vector<int64_t> m;
+    CRT(vector<int64_t> p) {
+        m = p, n = (int64_t) m.size();
+    }
+    int64_t inverse(int64_t a, int64_t m) {
+        int64_t u = 0, v = 1, temp = m;
+        while (a != 0) {
+            int64_t t = m / a;
+            m -= t * a; swap(a, m);
+            u -= t * v; swap(u, v);
+        }
+        if (u < 0) u += temp;
+        // assert(m == 1);
+        // becomes false when number and it's mod are not coprime
+        return u;
+    }
+    // (rem, isSolvable)
+    // isSolvable == 0 means no solution exists
+    pair<int64_t, int64_t> get(vector<int64_t> r) {
+        assert(r.size() == m.size());
+        int64_t n = int64_t(r.size());
+        // Contracts: 0 <= r0 < m0
+        int64_t r0 = 0, m0 = 1;
+        for (int64_t i = 0; i < n; i++) {
+            assert(m[i] >= 1);
+            int64_t r1 = (r[i] % m[i] + m[i]) % m[i], m1 = m[i];
+            if (m0 < m1) {
+                swap(r0, r1); swap(m0, m1);
+            }
+            if (m0 % m1 == 0) {
+                if (r0 % m1 != r1) return {0, 0};
+                continue;
+            }
+            // assume: m0 > m1, lcm(m0, m1) >= 2 * max(m0, m1)
+
+            // (r0, m0), (r1, m1) -> (r2, m2 = lcm(m0, m1));
+            // r2 % m0 = r0
+            // r2 % m1 = r1
+            // -> (r0 + x*m0) % m1 = r1
+            // -> x*u0*g = r1-r0 (mod u1*g) (u0*g = m0, u1*g = m1)
+            // -> x = (r1 - r0) / g * inv(u0) (mod u1)
+
+            // im = inv(u0) (mod u1) (0 <= im < u1)
+
+            int64_t g = __gcd(m0, m1), im = inverse(m0, m1);
+            int64_t u1 = (m1 / g);
+            // |r1 - r0| < (m0 + m1) <= lcm(m0, m1)
+            if ((r1 - r0) % g) return {0, 0};
+
+            // u1 * u1 <= m1 * m1 / g / g <= m0 * m1 / g = lcm(m0, m1)
+            int64_t x = (r1 - r0) / g % u1 * im % u1;
+
+            // |r0| + |m0 * x|
+            // < m0 + m0 * (u1 - 1)
+            // = m0 + m0 * m1 / g - m0
+            // = lcm(m0, m1)
+            r0 += x * m0;
+            m0 *= u1; // -> lcm(m0, m1)
+            if (r0 < 0) r0 += m0;
+        }
+        return {r0, m0};
+    }
+};
+
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>chinese_remainder_theorem</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.cpp, source.c++, source.c</scope>
+</snippet>

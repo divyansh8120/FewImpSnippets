@@ -1,0 +1,74 @@
+	<snippet>
+	<content><![CDATA[
+
+/*
+https://discuss.codechef.com/t/guide-to-modular-arithmetic-plus-tricks-codechef-edition-there-is-no-other-edition/67424/2
+*/
+
+ll fact[maxN], invfact[maxN], inverse[maxN];
+ll modinv(ll a) {
+	return powerM(a, mod - 2, mod);
+}
+ll nCr(ll n, ll r) {
+	if (r > n || r < 0 || n < 0) return 0;
+	return ((fact[n] * invfact[r]) % mod * invfact[n - r]) % mod;
+}
+ll nPr(ll n, ll r) {
+	if (r > n || r < 0 || n < 0) return 0;
+	return (fact[n] * invfact[n - r]) % mod;
+}
+void precomputenCr() {
+	fact[0] = fact[1] = 1;
+	for (ll i = 2; i < maxN; i++) {
+		fact[i] = (fact[i - 1] * i) % mod;
+	}
+	/*
+	n! = n * (n-1) !
+	==> 1/(n-1!) = n/(n!)
+	==> (1/(n-1!)) % M = (n/(n!)) % M
+	==> (1/(n-1!)) % M = ((n % M) * ((1/(n!)) % M)) % M
+	*/
+	invfact[maxN - 1] = modinv(fact[maxN - 1]);
+	for (ll i = maxN - 2; i >= 0; i--) {
+		invfact[i] = invfact[i + 1] * (i + 1);
+		invfact[i] %= mod;
+	}
+	/*
+	==> 1/n = (n-1)!/(n!)
+	*/
+	for (ll i = 1; i < maxN; i++) {
+  		inverse[i] = (fact[i - 1] * invfact[i]) % mod;
+	}
+}
+// calculate ncr without mod
+ll defnCr(ll n, ll r) { 
+	if (r > n || r < 0 || n < 0) return 0;
+	ll v = 1;
+	r = min(r, n - r);
+	for (ll i = 1; i <= r; ++i) {
+		v *= (n - (i - 1));
+		v /= i;
+	}
+	return v;
+	// can also use formula (n)C(r) = (n-1)C(r) + (n-1)C(r-1);
+}
+
+// int trick(int n, int m) {
+// 	   // nCr when n is big but m is small
+//     // C(n, i) -> C(n, i-1) * (n-i+1)/i
+//     // C(n, 0) = 1
+// 
+//     int ret = 1;
+//     for(int i = 1; i <= m; i++) {
+//         ret = ret * 1LL * (n - i + 1) / i;
+//     }
+//     return ret;
+// }
+
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>nCr_in_O(1)_fnc</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.cpp, source.c++, source.c</scope>
+</snippet>

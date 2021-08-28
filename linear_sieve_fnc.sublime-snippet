@@ -1,0 +1,52 @@
+<snippet>
+	<content><![CDATA[
+
+/*
+https://codeforces.com/blog/entry/54090
+*/
+
+vector<bool> isprime(maxN, true);
+vector<int> primes;
+vector<int> spf(maxN);
+void linear_sieve() {
+    isprime[0] = isprime[1] = false;
+    for (int i = 2; i < maxN ; i++) {
+        if (isprime[i]) {
+            primes.push_back(i);
+            spf[i] = i;
+        }
+        for (int j = 0; j < (int)primes.size() && i * primes[j] < maxN; j++) {
+            isprime[i * primes[j]] = false;
+            spf[i * primes[j]] = primes[j];
+            if (i % primes[j] == 0) {
+                // this is basically alternative to primes[j] <= primes[i]
+                break;
+            }
+        }
+    }
+}
+
+// int normalize(int n) {
+vector<pair<int, int>> factorize(int n) {
+    vector<pair<int, int>> fac;
+    int norm = 1;
+    while (n > 1) {
+        int c = 0, sp = spf[n];
+        while (n % sp == 0) {
+            n /= sp;
+            c++;
+        }
+        fac.pb({sp, c});
+        if (c & 1)
+            norm *= sp;
+    }
+    return fac;
+    // return norm;
+}
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>linear_sieve_fnc</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.cpp, source.c++, source.c</scope>
+</snippet>

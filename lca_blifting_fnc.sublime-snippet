@@ -1,0 +1,37 @@
+<snippet>
+	<content><![CDATA[
+
+// lca of node a and node b has to be found
+// we consider that node b has a greater depth than node a
+ll getLCA(ll a, ll b, ll n) {
+	ll d = lvl[b] - lvl[a];
+	while (d > 0) {
+		ll k = log2(d);
+		b = par[b][k];
+		d -= (1LL << k);
+	}
+	if (a == b) return a;
+	int maxN = log2(n); // here maxN is acting as a index only
+	for (ll i = maxN; i >= 0; i--) {
+		if (par[a][i] != -1 && (par[a][i] != par[b][i])) {
+			a = par[a][i]; b = par[b][i];
+		}
+	}
+	return par[a][0];
+}	
+// inside main()
+// maxN = floor(log2(n))+1
+for (ll i = 1; i < maxN; i++) {
+	for (ll j = 1; j < n; j++) {
+		if (par[j][i - 1] != -1) {
+			par[j][i] = par[par[j][i - 1]][i - 1];
+		}
+	}
+}
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>lca_blifting_fnc</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.cpp, source.c++, source.c</scope>
+</snippet>

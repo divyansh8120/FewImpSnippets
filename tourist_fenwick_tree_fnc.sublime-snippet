@@ -1,0 +1,56 @@
+<snippet>
+	<content><![CDATA[
+template<typename T>
+struct fenwick_tree {
+    int tree_n = 0;
+    T tree_sum = 0;
+    vector<T> tree;
+
+    fenwick_tree(int n = 0) {
+        if (n > 0)
+            init(n);
+    }
+
+    void init(int n) {
+        tree_n = n;
+        tree_sum = 0;
+        tree.assign(tree_n + 1, 0);
+    }
+
+    // index is in [0, tree_n).
+    void update(int index, const T &change) {
+        assert(0 <= index && index < tree_n);
+        tree_sum += change;
+
+        for (int i = index + 1; i <= tree_n; i += i & -i)
+            tree[i] += change;
+    }
+
+    // Returns the sum of the range [0, count).
+    T query(int count) const {
+        assert(count <= tree_n);
+        T sum = 0;
+
+        for (int i = count; i > 0; i -= i & -i)
+            sum += tree[i];
+
+        return sum;
+    }
+
+    // Returns the sum of the range [start, tree_n).
+    T query_suffix(int start) const {
+        return tree_sum - query(start);
+    }
+
+    // Returns the sum of the range [a, b).
+    T query(int a, int b) const {
+        return query(b) - query(a);
+    }
+};
+
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>tourist_fenwick_tree</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.cpp, source.c++, source.c</scope>
+</snippet>

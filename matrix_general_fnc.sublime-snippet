@@ -1,0 +1,127 @@
+<snippet>
+    <content><![CDATA[
+/*
+Usage:
+https://codeforces.com/contest/166/submission/121177144
+
+Worth Knowing:
+https://stackoverflow.com/a/2533357
+https://stackoverflow.com/questions/5346890/what-is-the-difference-between-const-iterator-and-iterator
+https://www.geeksforgeeks.org/const-vs-regular-iterators-in-c-with-examples/
+
+Sample usage:
+
+Declaration:
+mtr(n, m, optional_inital_value);
+
+Initialization:
+init(mtr, {{}, {}, ... n times initializer list each of size m});
+
+Declaration as well as initialization:
+mtr temp = mtr_1 *,+,_ mtr_2
+
+We can reassign it as well.
+mtr a(2, 2, 0);
+a = mtr(3, 3, 1);
+
+*=, +=, -= doesn't work
+*/
+
+template<typename T>
+struct matrix {
+    int N, M;
+    std::vector<T> data;
+    
+    matrix(int _N, int _M, T value = T{}) : N(_N), M(_M), data(N * M, value) {}
+
+    typename std::vector<T>::iterator operator[](int i) {
+        return data.begin() + i * M;
+    }
+    typename std::vector<T>::const_iterator operator[](int i) const {
+        return data.begin() + i * M;
+    }
+
+    friend void init(matrix<T>& a, const vector<vector<T>> & b) {
+        assert(a.N == int(b.size()) && a.M == int(b[0].size()));
+        for (int i = 0; i < a.N; i++)
+            for (int j = 0; j < a.M; j++)
+                a[i][j] = b[i][j];
+    }
+    
+    friend matrix<T> operator * (const matrix<T>& a, const matrix<T>& b) {
+        assert(a.M == b.N);
+        matrix<T> res(a.N, b.M);
+        for (int i = 0; i < a.N; i++)
+            for (int k = 0; k < a.M; k++)
+                for (int j = 0; j < b.M; j++)
+                    res[i][j] += a[i][k] * b[k][j];
+        return res;
+    }
+    
+    friend matrix<T> operator + (const matrix<T>& a, const matrix<T>& b) {
+        assert(a.N == b.N && a.M == b.M);
+        matrix<T> res(a.N, a.M);
+        for (int i = 0; i < a.N; i++)
+            for (int k = 0; k < a.M; k++)
+                res[i][k] = a[i][k] + b[i][k];
+        return res;
+    }
+
+    friend matrix<T> operator - (const matrix<T>& a, const matrix<T>& b) {
+        assert(a.N == b.N && a.M == b.M);
+        matrix<T> res(a.N, a.M);
+        for (int i = 0; i < a.N; i++)
+            for (int k = 0; k < a.M; k++)
+                res[i][k] = a[i][k] - b[i][k];
+        return res;
+    }
+
+    friend void row_reduce(matrix<T> &m) {
+        int rank = 0;
+        for (int j = 0; j < m.M && rank < m.N; j++) {
+            for (int i = rank; i < m.N; i++) {
+                if (m[i][j] != 0) {
+                    swap_ranges(m[rank], m[rank] + m.M, m[i]);
+                    break;
+                }
+            }
+            if (m[rank][j] == 0)
+                continue;
+
+            T inv = 1 / m[rank][j];
+            for (int k = j; k < m.M; k++)
+                m[rank][k] *= inv;
+
+            for (int i = 0; i < m.N; i++) {
+                if (i != rank) {
+                    T c = m[i][j];
+                    for (int k = j; k < m.M; k++)
+                        m[i][k] -= c * m[rank][k];
+                }
+            }
+            rank++;
+        }
+
+        m.N = rank;
+        m.data.resize(m.N * m.M);
+    }
+
+    friend std::ostream& operator << (std::ostream& os, const matrix<T>& m) {
+        for (int i = 0; i < m.N; i++) {
+            os << (i ? i < m.N - 1 ? "\u2503" : "\u2517" : "\n\u250F");
+            for (int j = 0; j < m.M; j++)
+                os << std::setw(12) << m[i][j];
+            os << "  " << (i ? i < m.N - 1 ? "\u2503" : "\u251B" : "\u2512") << "\n";
+        }
+        return os;
+    }
+};
+
+using mtr = matrix<int>;
+
+]]></content>
+    <!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+    <tabTrigger>matrix_general</tabTrigger>
+    <!-- Optional: Set a scope to limit where the snippet will trigger -->
+    <scope>source.c++, source.cpp, source.c</scope>
+</snippet>
